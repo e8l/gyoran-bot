@@ -16,6 +16,7 @@ module.exports = (robot) ->
 
   #Take photo
   robot.respond /fug me/i, (msg) ->
+    robot.logger.info 'FUG_ME: called'
     msg.send 'ϵ( ・Θ・)э < ちょっとまってね'
     robot.http(api.fugme)
     .get() (err, res, body) ->
@@ -23,13 +24,14 @@ module.exports = (robot) ->
         addr = JSON.parse(body).Address
         msg.send addr
       else
+        robot.logger.info 'FUG_ME: ' + err
         msg.send 'ϵ( ・Θ・)϶ < 今はあんまり調子が良くない'
 
   #Get prev photo
   robot.respond /fug image/i, (msg) ->
+    robot.logger.info 'FUG_IMAGE: called'
     robot.http(api.getfug)
     .get() (err, res, body) ->
       addr = JSON.parse(body).Address
       msg.send 'ϵ( ・Θ・)϶ < んご'
       msg.send addr
-
