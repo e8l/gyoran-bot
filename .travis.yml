@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+    - '5.0.0'
+
+deploy:
+  provider: heroku
+  api_key:
+    secure: a1tNDNq0z6D5oQoysB71fFFnbUWKqg4OXYEMCrWd8qZcEYMPS3Mp6fkZq2UrHGJYf+A/ZDqWj6ZZa2LsZzmF69bGGFd6XaZC6EYOEc3rqtnRglEHcmgZTo3nRiO/gOVKJdNpKqfJUYjTcju77KcAfyTBoS4v28E2TqPSu+Bclrt1sTGVk3XB894Xhc150Dy1nTP0fYLw8K6AiTmBgR0CXqhOwQu0Qi9tcMAg4Wq6vYt2D9DrN3+IPx9lXaZnqmyObY/XDN0cpOJHpMdB/R8yA7eZav+RAg6+HwnUihRzPQ/oH4ZaFxVvOcQQcSKhqYu8NnhIzUkaCo9VAkqK7+ff/b/ErbBRSpTjAx18m1QwTO7ctvabK8Zbk+zTA3J9Fosl5QkK5LMB92MBYIzVNw+hEF92zsX8uNUZ8UbBj24eJXmR4rD7ZZuU6RpdCCcxyF0as6hzB5Q42eSgDD6Iz+FiAwIwNZSZzpl06sHEWuJmAfQucNozhwlUvrR62osZejwLDyOfUrqbCpPx4L2P5GGfG00ZDVDfWbaTN1np+joaareOvBM1HqBTZDRnsVxc7hNC2dVJXZ3J1K4RBDM3ujDwF8D6FzCi+f3ljdCXouPlWGVVH9aNkof/9Ol6u+6ZPasU9cANGFPRVAmhM64hDtOAGnzmacZ8aNjS2lclLot/GOg=
+  app: gyoran-bot
+  on:
+    repo: MKomiya/gyoran-bot
