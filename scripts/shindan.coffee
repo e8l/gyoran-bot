@@ -109,7 +109,10 @@ shindanMaker = new ShindanMaker
 
 module.exports = (robot) ->
   # add shindan
-  robot.respond /shindan-register ([\w]+) ([0-9]+)/, (msg) ->
+  # \d is equivarent to [0-9]
+  # \s+ matches more than one space.
+  # ex: @gyoran-bot shindan-register unigacha 586328
+  robot.respond /shindan-register\s+(\w+)\s+(\d+)/, (msg) ->
     shindanName = msg.match[1]
     shindanId = msg.match[2]
     userName = msg.message.user.name
@@ -122,7 +125,7 @@ module.exports = (robot) ->
       storage.close()
 
   # Run shindan
-  robot.respond /shindan ([\w]+)/, (msg) ->
+  robot.hear /^\s*shindan\s+(\w+)\s*$/, (msg) ->
     shindanName = msg.match[1]
     userName = msg.message.user.name
     storage.get shindanName, (err, res) ->
@@ -131,7 +134,7 @@ module.exports = (robot) ->
         msg.send "#{userName} は診断名を逆引きできませんでした"
         return
       if !res
-        if ! /^[0-9]+$/.test(shindanName)
+        if ! /^\d+$/.test(shindanName)
           msg.send 'そういう診断はない'
           return
         res = shindanName
