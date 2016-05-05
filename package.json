@@ -18,7 +18,10 @@
     "hubot-scripts": "^2.5.16",
     "hubot-shipit": "^0.1.1",
     "hubot-slack": "^3.2.1",
-    "hubot-youtube": "^0.1.2"
+    "hubot-youtube": "^0.1.2",
+    "cheerio": "^0.20.0",
+    "redis": "^2.5.0",
+    "request": "^2.27.0"
   },
   "engines": {
     "node": "0.10.x"
