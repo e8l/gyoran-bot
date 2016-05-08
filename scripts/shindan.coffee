@@ -30,8 +30,8 @@ class RedisStorage
       callback(new Error "Key is invalid. key=#{key}", null)
       return 
     
-    this.connect()
-    @client.get this.key(key), (err, res) ->
+    @connect()
+    @client.get @key(key), (err, res) ->
       if err
         callback(err, null)
         return
@@ -42,8 +42,8 @@ class RedisStorage
       callback(new Error "Key is invalid. key=#{key}", null)
       return 
 
-    this.connect()
-    @client.set this.key(key), value, (err, res) ->
+    @connect()
+    @client.set @key(key), value, (err, res) ->
       if err
         callback(err, null)
         return
@@ -54,20 +54,20 @@ class RedisStorage
       callback(new Error "Key is invalid. key=#{key}", null)
       return
     
-    this.connect()
-    @client.del this.key(key), (err, res) ->
+    @connect()
+    @client.del @key(key), (err, res) ->
       if err
         callback(err, null)
         return
       callback(null, res)
   
   list: (callback) =>
-    this.connect()
-    @client.keys this.key('*'), (err, res) =>
+    @connect()
+    @client.keys @key('*'), (err, res) =>
       if err
         callback(err, null)
         return
-      prefixLength = this.key('').length
+      prefixLength = @key('').length
       result = res
         .map (_) -> _.substr(prefixLength)
       callback(null, result)
