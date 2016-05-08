@@ -20,13 +20,18 @@ class RedisStorage
     if !@client
       @client = @Redis.createClient @url
   
+  close: =>
+    if @client
+      @client.quit()
+      @client = null
+  
   get: (key, callback) =>
     if !key
       callback(new Error "Key is invalid. key=#{key}", null)
       return 
     
     this.connect()
-    @client.get @keyspace + '.' + key, (err, res) ->
+    @client.get this.key(key), (err, res) ->
       if err
         callback(err, null)
         return
@@ -38,7 +43,7 @@ class RedisStorage
       return 
 
     this.connect()
-    @client.set @keyspace + '.' + key, value, (err, res) ->
+    @client.set this.key(key), value, (err, res) ->
       if err
         callback(err, null)
         return
@@ -50,16 +55,25 @@ class RedisStorage
       return
     
     this.connect()
-    @client.del @keyspace + '.' + key, (err, res) ->
+    @client.del this.key(key), (err, res) ->
       if err
         callback(err, null)
         return
       callback(null, res)
   
-  close: =>
-    if @client
-      @client.quit()
-      @client = null
+  list: (callback) =>
+    this.connect()
+    @client.keys this.key('*'), (err, res) =>
+      if err
+        callback(err, null)
+        return
+      prefixLength = this.key('').length
+      result = res
+        .map (_) -> _.substr(prefixLength)
+      callback(null, result)
+  
+  key: (k) =>
+    return @keyspace + '.' + k
 
 ##################################################
 class ShindanMaker
@@ -86,14 +100,14 @@ class ShindanMaker
         callback(e, null)
         return
       if res.statusCode != 200
-        callback(new Error 'HTTP status code is ' + res.statusCode, null)
+        callback(new Error "HTTP status code is #{res.statusCode}", null)
         return
       
       $ = @Cheerio.load body
       result = $('div.result2 > div').text().trim()
       if !result
         if $('title').text().trim() == 'エラー'
-          callback(new Error 'Shindan ID "' + shindanId + '" does not exist.', null)
+          callback(new Error "Shindan ID '#{shindanId}' does not exist.", null)
           return
         callback(new Error 'Could not parse response. Assumed output format of "shindanmaker.com" may be outdated.', null)
         return
@@ -108,7 +122,7 @@ storage = new RedisStorage {
 shindanMaker = new ShindanMaker
 
 module.exports = (robot) ->
-  # add shindan
+  # register shindan
   # \d is equivarent to [0-9]
   # \s+ matches more than one space.
   # ex: @gyoran-bot shindan-register unigacha 586328
@@ -123,8 +137,33 @@ module.exports = (robot) ->
       else
         msg.send "#{userName} は診断名を登録しました: #{shindanName} -> #{shindanId}"
       storage.close()
-
-  # Run shindan
+  
+  # remove shindan
+  # ex: @gyoran-bot shindan-remove unigacha
+  robot.respond /shindan-remove\s+(\w+)/, (msg) ->
+    shindanName = msg.match[1]
+    userName = msg.message.user.name
+    storage.remove shindanName, (err, res) ->
+      if err
+        robot.logger.warn 'SHINDAN: ' + err
+        msg.send "#{userName} は診断名を削除できませんでした"
+      else
+        msg.send "#{userName} は診断名を削除しました（｀ェ´）: #{shindanName}"
+      storage.close()
+  
+  # list shindan
+  robot.hear /^\s*shindan-list/, (msg) ->
+    userName = msg.message.user.name
+    storage.list (err, res) ->
+      if err
+        robot.logger.warn 'SHINDAN: ' + err
+        msg.send "#{userName} は診断一覧を見せてもらえなかった..."
+      else
+        list = res.reduce (acm, _) -> acm + ' / ' + _
+        msg.send list
+      storage.close()
+  
+  # run shindan
   robot.hear /^\s*shindan\s+(\w+)\s*$/, (msg) ->
     shindanName = msg.match[1]
     userName = msg.message.user.name
@@ -147,4 +186,3 @@ module.exports = (robot) ->
         msg.send res
         
       storage.close()
-  
