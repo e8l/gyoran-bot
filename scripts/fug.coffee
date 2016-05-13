@@ -17,7 +17,7 @@ module.exports = (robot) ->
 
   #Take photo
 
-  fugmeCallback = (msg) ->
+  executeFugMe = (msg) ->
     robot.logger.info 'FUG_ME: called'
     msg.send 'ϵ( ・Θ・)э < ちょっとまってね'
     robot.http(api.fugme)
@@ -29,12 +29,12 @@ module.exports = (robot) ->
            robot.logger.info 'FUG_ME: ' + err
            msg.send 'ϵ( ・Θ・)϶ < 今はあんまり調子が良くない'
 
-  robot.respond /fug me/i, fugmeCallback
-  robot.hear /^\s*fug\s+me(?:\s*$|\s+\S.*)/i, fugmeCallback
+  robot.respond /fug me/i, executeFugMe
+  robot.hear /^\s*fug\s+me(?:\s*$|\s+\S.*)/i, executeFugMe
 
   #Get prev photo
 
-  getfugCallback = (msg) ->
+  executeGetFug = (msg) ->
     robot.logger.info 'FUG_IMAGE: called'
     robot.http(api.getfug)
       .get() (err, res, body) ->
@@ -42,5 +42,5 @@ module.exports = (robot) ->
         msg.send 'ϵ( ・Θ・)϶ < んご'
         msg.send addr
 
-  robot.respond /fug image/i, getfugCallback
-  robot.hear /^\s*fug\s+image(?:\s*$|\s+\S.*)/i, getfugCallback
+  robot.respond /fug image/i, executeGetFug
+  robot.hear /^\s*fug\s+image(?:\s*$|\s+\S.*)/i, executeGetFug
